@@ -10,53 +10,49 @@ class Solution {
         // stop conversion with non numbers
         // handle overflow cases
 
-        // so lets start by trimming the input string to remove whitespace at the start
-        s = s.trim();
+        // take 3
+        // grab our length..
+        int length = s.length();
 
-        // our sign, we presume positive and just check for negative
-        int sign = 1;
+        // null and length check..
+        if(length == 0 || s == null) return 0;
 
-        // our traversal variable..
+        // our traversal pointer..
         int i = 0;
 
-        // our result variable to hold the number
+        // handle the whitespace at the beginning
+        while(i < length && s.charAt(i) == ' ') i++;
+
+        // our checker for positive and negative
+        boolean isNegative = false;
+
+        // and how we handle it
+        if(i < length)  {
+            if(s.charAt(i) == '-') {
+                isNegative = true;
+                i++;
+            } else if(s.charAt(i) == '+') {
+                i++;
+            }
+        }
+
         int result = 0;
 
-        // make sure 0 length strings are taken care of...
-        if(s.length() == 0)
-            return 0;
+        // so check to make sure the character is within our digit boundaries
+        while((i < length) && (s.charAt(i) >= '0') && (s.charAt(i) <= '9')) {
+            // so we'll grab the current character, minus the '0' to convert it from '3' to 3
+            int currentDigit = s.charAt(i) - '0';
 
-        // check for + or -
-        if(s.charAt(0) == '-') {
-            // so we know it's a negative number and can increment our traversal
-            sign = -1;
-            i++;
-        } else if(s.charAt(0) == '+') {
-            i++;
-        }
+            // check for overflow
+            if(result > (Integer.MAX_VALUE / 10) || (result == (Integer.MAX_VALUE / 10) && currentDigit > 7)) {
+                return isNegative ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            }
 
-        // time to deal with the rest of the numbers
-        while(i < s.length()) {
-            // so lets grab the character..
-            char c = s.charAt(i);
-
-            // use character comparison to make sure it's in our valid numerical bounds
-            if(c < '0' || c > '9') break;
-
-            // convert that character to a number
-            result = (result * 10) + (c - '0');
-
-            // deal with the overflow cases
-            if(sign * result > Integer.MAX_VALUE)
-                return Integer.MAX_VALUE;
-            if(sign * result < Integer.MIN_VALUE)
-                return Integer.MIN_VALUE;
-
-            // increment our counter and move on the loop
+            // bump the current result and add the currentDigit
+            result = (result * 10) + currentDigit;
             i++;
         }
 
-        // have to cast it to an int multiplied buy our sign!
-        return (int) (sign * result);
+        return isNegative ? -result : result;
     }
 }
